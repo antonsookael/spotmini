@@ -23,6 +23,8 @@ func runCommandLoop(accessToken string) {
 
 		switch command {
 		case "":
+			fmt.Print("\033[H\033[2J\033[3J")
+			printCommands()
 			if playing, err := playback.IsPlaying(accessToken); err != nil {
 				fmt.Println("Error:", err)
 			} else if playing {
@@ -40,6 +42,8 @@ func runCommandLoop(accessToken string) {
 			}
 
 		case "n":
+			fmt.Print("\033[H\033[2J\033[3J")
+			printCommands()
 			if err := playback.NextTrack(accessToken); err != nil {
 				fmt.Println("Error:", err)
 			} else {
@@ -47,6 +51,8 @@ func runCommandLoop(accessToken string) {
 			}
 
 		case "sh":
+			fmt.Print("\033[H\033[2J\033[3J")
+			printCommands()
 			if shuffled, err := playback.IsShuffled(accessToken); err != nil {
 				fmt.Println("Error:", err)
 			} else if shuffled {
@@ -64,22 +70,32 @@ func runCommandLoop(accessToken string) {
 			}
 
 		case "s":
-			playing, err := playback.IsPlaying(accessToken)
+			fmt.Print("\033[H\033[2J\033[3J")
+			printCommands()
+			state, err := playback.NowPlaying(accessToken)
 			if err != nil {
 				fmt.Println("Error:", err)
+			} else if state.Item.Name == "" {
+				fmt.Println("Nothing playing")
 			} else {
-				fmt.Println("Is playing:", playing)
+				minutes := state.ProgressMs / 1000 / 60
+				seconds := (state.ProgressMs / 1000) % 60
+				fmt.Printf("%s by %s — %d:%02d\n", state.Item.Name, state.Item.Artists[0].Name, minutes, seconds)
 			}
 
 		case "h":
+			fmt.Print("\033[H\033[2J\033[3J")
 			printCommands()
 
 		case "q", "exit":
+			fmt.Print("\033[H\033[2J\033[3J")
 			fmt.Println("Bye!")
 			return
 
 		default:
-			fmt.Println("Unknown command. Type 'help' to see options.")
+			fmt.Print("\033[H\033[2J\033[3J")
+			printCommands()
+			fmt.Println("Unknown command. Type 'h' to see options.")
 		}
 	}
 }
@@ -91,4 +107,5 @@ func printCommands() {
 	fmt.Println("  s - Show status")
 	fmt.Println("  h - Show help")
 	fmt.Println("  q - Quit")
+	fmt.Println("-------------------------")
 }

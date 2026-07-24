@@ -8,7 +8,20 @@ import (
 )
 
 type PlaybackState struct {
-	IsPlaying bool `json:"is_playing"`
+	IsPlaying    bool  `json:"is_playing"`
+	ShuffleState bool  `json:"shuffle_state"`
+	ProgressMs   int   `json:"progress_ms"`
+	Item         Track `json:"item"`
+}
+
+type Track struct {
+	Name       string   `json:"name"`
+	DurationMs int      `json:"duration_ms"`
+	Artists    []Artist `json:"artists"`
+}
+
+type Artist struct {
+	Name string `json:"name"`
 }
 
 func IsPlaying(accessToken string) (bool, error) {
