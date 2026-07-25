@@ -28,10 +28,8 @@ func loadEnv() {
 	if err := godotenv.Load(); err != nil {
 		fmt.Println("Warning: no .env file found - relying on real environment variables instead")
 	}
-
 	clientID = os.Getenv("clientID")
 	clientSecret = os.Getenv("clientSecret")
-
 	if clientID == "" || clientSecret == "" {
 		fmt.Println("Missing CLIENT_ID or CLIENT_SECRET - check your .env file")
 		os.Exit(1)
@@ -40,6 +38,7 @@ func loadEnv() {
 
 func main() {
 	loadEnv()
+
 	saved, err := loadToken()
 	if err == nil && saved.RefreshToken != "" {
 		fmt.Println("Found saved token, refreshing instead of logging in again...")
@@ -50,7 +49,7 @@ func main() {
 			return
 		}
 		fmt.Println("Access token:", newToken.AccessToken)
-		runCommandLoop(newToken.AccessToken)
+		launchGUI(newToken.AccessToken)
 		return
 	}
 
@@ -84,8 +83,6 @@ func refreshToken(refresh string) (TokenResponse, error) {
 		return TokenResponse{}, err
 	}
 
-	// Spotify sometimes doesn't return a new refresh_token on refresh -
-	// if it didn't, keep using the one we already have.
 	if token.RefreshToken == "" {
 		token.RefreshToken = refresh
 	}

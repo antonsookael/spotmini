@@ -26,5 +26,11 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	saveToken(token)
 	fmt.Println("Access token:", token.AccessToken)
-	fmt.Fprintln(w, "Logged in! You can close this tab and go back to the terminal.")
+	fmt.Fprintln(w, "Logged in! You can close this tab and go back to the app.")
+
+	// Launch the GUI now that we have a valid token. Runs in a
+	// goroutine since this handler needs to finish responding to
+	// the browser, and launchGUI blocks (ShowAndRun) until the
+	// window is closed.
+	go launchGUI(token.AccessToken)
 }
