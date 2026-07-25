@@ -73,10 +73,20 @@ func launchGUI(accessToken string) {
 		defer ticker.Stop()
 
 		secondsSinceSync := 0
+		idleSecondsSinceCheck := 0
 		for range ticker.C {
 			if currentSong == "" {
-				continue // nothing playing, nothing to count
+				// Nothing playing - check every 2 seconds to see if
+				// something started, instead of waiting for a button
+				// click or the normal 15-second sync.
+				idleSecondsSinceCheck++
+				if idleSecondsSinceCheck >= 2 {
+					idleSecondsSinceCheck = 0
+					fetchNowPlaying()
+				}
+				continue
 			}
+			idleSecondsSinceCheck = 0
 
 			secondsSinceSync++
 
